@@ -1,34 +1,39 @@
 package platform;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Controller
 @RequestMapping("/code")
 public class CodeController {
-    Code code;
+    CodeRepository codeRepository;
 
-    public CodeController(@Autowired Code code) {
-        this.code = code;
+    public CodeController(CodeRepository codeRepository) {
+        this.codeRepository = codeRepository;
     }
 
-    @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
-    public String getCode(Model model, HttpServletResponse response) {
-        model.addAttribute("code", code.getCodeValue());
-        model.addAttribute("date", code.getDateTimeAsString());
-
-        response.addHeader("Content-Type", "text/html");
+    @GetMapping(value = "/{n}", produces = MediaType.TEXT_HTML_VALUE)
+    public String getNthCode(@PathVariable int n, Model model) {
+        model.addAttribute("snippets", List.of(codeRepository.getById(n)));
+        model.addAttribute("title", "Code");
         return "code";
     }
 
     @GetMapping(value = "/new", produces = MediaType.TEXT_HTML_VALUE)
     public String getNewCode() {
         return "new-code";
+    }
+
+    @GetMapping(value = "/latest", produces = MediaType.TEXT_HTML_VALUE)
+    public String getLatestNCodes(Model model) {
+        model.addAttribute("snippets", codeRepository.getRecentlyUploaded(10));
+        model.addAttribute("title", "Latest");
+        return "code";
     }
 }

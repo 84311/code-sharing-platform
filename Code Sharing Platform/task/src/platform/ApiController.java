@@ -1,42 +1,33 @@
 package platform;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping("/api/code")
 public class ApiController {
-    Code code;
+    CodeRepository codeRepository;
 
-    public ApiController(@Autowired Code code) {
-        this.code = code;
+    public ApiController(CodeRepository codeRepository) {
+        this.codeRepository = codeRepository;
     }
 
-    @GetMapping
-    @ResponseBody
-    public ResponseEntity<Code> getCode() {
-        return ResponseEntity.ok().
-                header("Content-Type", "application/json")
-                .body(code);
+    @GetMapping("/{n}")
+    public Code getNthCode(@PathVariable int n) {
+        return codeRepository.getById(n);
     }
 
     @PostMapping("/new")
-    @ResponseBody
-    public EmptyJson setCode(@RequestBody Map<String, String> codeJSON) {
-        code.setCodeValue(codeJSON.get("code"));
-        code.setDateTime(LocalDateTime.now());
-
-        return new EmptyJson();
+    public Map<String, String> setCode(@RequestBody Map<String, String> codeJSON) {
+        codeRepository.add(new Code(codeJSON.get("code"), LocalDateTime.now()));
+        return Map.of("id", String.valueOf(codeRepository.size()));
     }
 
-    @JsonSerialize
-    static
-    class EmptyJson {
+    @GetMapping("/latest")
+    public List<Code> getLatestNCodes() {
+        return codeRepository.getRecentlyUploaded(10);
     }
 }

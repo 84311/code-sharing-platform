@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@200&display=swap');
+
 * {
   border: none;
   outline: none;
@@ -24,25 +26,29 @@ body {
   overflow: auto;
 }
 
-#editor {
+.code, #editor {
   border: 1px solid black;
-  height: 500px;
+}
+
+.code {
+  background-color: #F0F0F0;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 1.6rem;
+  margin-bottom: 2rem;
   min-width: 600px;
   overflow: auto;
+  padding: 1rem;
   position: relative;
 }
 
-#content p, #load_date {
+.date {
   color: green;
+  display: block;
   font-size: 2rem;
   padding-bottom: 0.5rem;
 }
 
-#load_date {
-  display: block;
-}
-
-#send_snippet {
+.send_snippet {
   background: white;
   border: .1rem solid black;
   font-size: 1.6rem;
@@ -50,7 +56,7 @@ body {
   padding: .8rem .3rem;
 }
 
-#send_snippet:hover {
+.send_snippet:hover {
   background: green;
   color: white;
   cursor: pointer;

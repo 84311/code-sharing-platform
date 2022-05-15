@@ -19,19 +19,6 @@ import static org.hyperskill.hstest.testing.expect.Expectation.expect;
 import static org.hyperskill.hstest.testing.expect.json.JsonChecker.*;
 
 public class CodeSharingPlatformTest extends SpringTest {
-    public CodeSharingPlatformTest() {
-        super(CodeSharingPlatform.class);
-    }
-
-    final String API_CODE = "/api/code/";
-    final String WEB_CODE = "/code/";
-
-    final String API_CODE_NEW = "/api/code/new";
-    final String WEB_CODE_NEW = "/code/new";
-
-    final String API_LATEST = "/api/code/latest";
-    final String WEB_LATEST = "/code/latest";
-
     final String[] SNIPPETS = {
             "public static void ...",
             "class Code { ...",
@@ -49,8 +36,14 @@ public class CodeSharingPlatformTest extends SpringTest {
             "Snippet #14",
     };
 
-    final Map<Integer, String> ids = new HashMap<>();
-    final Map<Integer, String> dates = new HashMap<>();
+    final String API_CODE = "/api/code/";
+    final String WEB_CODE = "/code/";
+
+    final String API_CODE_NEW = "/api/code/new";
+    final String WEB_CODE_NEW = "/code/new";
+
+    final String API_LATEST = "/api/code/latest";
+    final String WEB_LATEST = "/code/latest";
     @DynamicTestingMethod
     public DynamicTesting[] dt = new DynamicTesting[]{
             // test 1
@@ -119,21 +112,50 @@ public class CodeSharingPlatformTest extends SpringTest {
             // test 54
             () -> checkApiLatest(13, 12, 11, 10, 9, 8, 7, 6, 5, 4),
             () -> checkWebLatest(13, 12, 11, 10, 9, 8, 7, 6, 5, 4),
+
+            // test 56
+            this::reloadServer,
+
+            // test 57
+            () -> checkApiCode(0),
+            () -> checkWebCode(0),
+            () -> checkApiCode(1),
+            () -> checkWebCode(1),
+            () -> checkApiCode(2),
+            () -> checkWebCode(2),
+            () -> checkApiCode(3),
+            () -> checkWebCode(3),
+            () -> checkApiCode(4),
+            () -> checkWebCode(4),
+            () -> checkApiCode(5),
+            () -> checkWebCode(5),
+            () -> checkApiCode(6),
+            () -> checkWebCode(6),
+            () -> checkApiCode(7),
+            () -> checkWebCode(7),
+            () -> checkApiCode(8),
+            () -> checkWebCode(8),
+            () -> checkApiCode(9),
+            () -> checkWebCode(9),
+            () -> checkApiCode(10),
+            () -> checkWebCode(10),
+            () -> checkApiCode(11),
+            () -> checkWebCode(11),
+            () -> checkApiCode(12),
+            () -> checkWebCode(12),
+            () -> checkApiCode(13),
+            () -> checkWebCode(13),
+
+            // test 85
+            () -> checkApiLatest(13, 12, 11, 10, 9, 8, 7, 6, 5, 4),
+            () -> checkWebLatest(13, 12, 11, 10, 9, 8, 7, 6, 5, 4),
     };
 
-    static Element getSingleTag(Document doc, String url, String tag) {
-        Elements elems = getElemsByTag(doc, url, tag, 1);
-        return elems.get(0);
-    }
+    final Map<Integer, String> ids = new HashMap<>();
+    final Map<Integer, String> dates = new HashMap<>();
 
-    static Elements getElemsByTag(Document doc, String url, String tag, int length) {
-        Elements elems = doc.getElementsByTag(tag);
-        if (elems.size() != length) {
-            throw new WrongAnswer("GET " + url +
-                    " should contain " + length + " <" + tag + "> " +
-                    "element" + (length == 1 ? "" : "s") + ", found: " + elems.size());
-        }
-        return elems;
+    public CodeSharingPlatformTest() {
+        super(CodeSharingPlatform.class, "../snippets.mv.db");
     }
 
     private CheckResult checkApiCode(int id) {
@@ -185,7 +207,9 @@ public class CodeSharingPlatformTest extends SpringTest {
         checkTitle(doc, req, "Code");
 
         Element pre = getById(doc, req, "code_snippet", "pre");
-        String webSnippetCode = pre.text();
+        Element code = getSingleTag(pre, req, "code");
+
+        String webSnippetCode = code.text();
         if (!webSnippetCode.trim().equals(apiSnippet.trim())) {
             return CheckResult.wrong("Web code snippet " +
                     "and api code snippet are different");
@@ -198,6 +222,12 @@ public class CodeSharingPlatformTest extends SpringTest {
                     "and api snippet date are different");
         }
 
+        if (!html.contains("hljs.initHighlightingOnLoad()")) {
+            return CheckResult.wrong(
+                    "Can't determine if code highlighting works or not.\n" +
+                            "Use \"hljs.initHighlightingOnLoad()\" inside the script tags in the HTML page.");
+        }
+
         return CheckResult.correct();
     }
 
@@ -208,7 +238,7 @@ public class CodeSharingPlatformTest extends SpringTest {
         }
     }
 
-    static Element getById(Document doc, String url, String id, String tag) {
+    static Element getById(Element doc, String url, String id, String tag) {
         Element elem = doc.getElementById(id);
 
         if (elem == null) {
@@ -225,19 +255,19 @@ public class CodeSharingPlatformTest extends SpringTest {
         return elem;
     }
 
-    private CheckResult checkWebCodeNew() {
-        HttpResponse resp = get(WEB_CODE_NEW).send();
-        checkStatusCode(resp, 200);
+    static Element getSingleTag(Element doc, String url, String tag) {
+        Elements elems = getElemsByTag(doc, url, tag, 1);
+        return elems.get(0);
+    }
 
-        String html = resp.getContent();
-        Document doc = Jsoup.parse(html);
-
-        checkTitle(doc, WEB_CODE_NEW, "Create");
-
-        getById(doc, WEB_CODE_NEW, "code_snippet", "textarea");
-        getById(doc, WEB_CODE_NEW, "send_snippet", "button");
-
-        return CheckResult.correct();
+    static Elements getElemsByTag(Element doc, String url, String tag, int length) {
+        Elements elems = doc.getElementsByTag(tag);
+        if (elems.size() != length) {
+            throw new WrongAnswer("GET " + url +
+                    " should contain " + length + " <" + tag + "> " +
+                    "element" + (length == 1 ? "" : "s") + ", found: " + elems.size());
+        }
+        return elems;
     }
 
     private CheckResult postSnippet(int id) {
@@ -258,6 +288,21 @@ public class CodeSharingPlatformTest extends SpringTest {
                             return true;
                         }))
         );
+
+        return CheckResult.correct();
+    }
+
+    private CheckResult checkWebCodeNew() {
+        HttpResponse resp = get(WEB_CODE_NEW).send();
+        checkStatusCode(resp, 200);
+
+        String html = resp.getContent();
+        Document doc = Jsoup.parse(html);
+
+        checkTitle(doc, WEB_CODE_NEW, "Create");
+
+        getById(doc, WEB_CODE_NEW, "code_snippet", "textarea");
+        getById(doc, WEB_CODE_NEW, "send_snippet", "button");
 
         return CheckResult.correct();
     }
@@ -351,6 +396,15 @@ public class CodeSharingPlatformTest extends SpringTest {
             }
         }
 
+        return CheckResult.correct();
+    }
+
+    private CheckResult reloadServer() {
+        try {
+            reloadSpring();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
         return CheckResult.correct();
     }
 }
