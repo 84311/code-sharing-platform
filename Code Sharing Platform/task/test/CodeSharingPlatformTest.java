@@ -19,6 +19,12 @@ import static org.hyperskill.hstest.testing.expect.Expectation.expect;
 import static org.hyperskill.hstest.testing.expect.json.JsonChecker.*;
 
 public class CodeSharingPlatformTest extends SpringTest {
+    final String API_CODE = "/api/code/";
+    final String WEB_CODE = "/code/";
+    final String API_CODE_NEW = "/api/code/new";
+    final String WEB_CODE_NEW = "/code/new";
+    final String API_LATEST = "/api/code/latest";
+    final String WEB_LATEST = "/code/latest";
     final String[] SNIPPETS = {
             "public static void ...",
             "class Code { ...",
@@ -35,15 +41,8 @@ public class CodeSharingPlatformTest extends SpringTest {
             "Snippet #13",
             "Snippet #14",
     };
-
-    final String API_CODE = "/api/code/";
-    final String WEB_CODE = "/code/";
-
-    final String API_CODE_NEW = "/api/code/new";
-    final String WEB_CODE_NEW = "/code/new";
-
-    final String API_LATEST = "/api/code/latest";
-    final String WEB_LATEST = "/code/latest";
+    final Map<Integer, String> ids = new HashMap<>();
+    final Map<Integer, String> dates = new HashMap<>();
     @DynamicTestingMethod
     public DynamicTesting[] dt = new DynamicTesting[]{
             // test 1
@@ -150,9 +149,6 @@ public class CodeSharingPlatformTest extends SpringTest {
             () -> checkApiLatest(13, 12, 11, 10, 9, 8, 7, 6, 5, 4),
             () -> checkWebLatest(13, 12, 11, 10, 9, 8, 7, 6, 5, 4),
     };
-
-    final Map<Integer, String> ids = new HashMap<>();
-    final Map<Integer, String> dates = new HashMap<>();
 
     public CodeSharingPlatformTest() {
         super(CodeSharingPlatform.class, "../snippets.mv.db");
@@ -270,6 +266,21 @@ public class CodeSharingPlatformTest extends SpringTest {
         return elems;
     }
 
+    private CheckResult checkWebCodeNew() {
+        HttpResponse resp = get(WEB_CODE_NEW).send();
+        checkStatusCode(resp, 200);
+
+        String html = resp.getContent();
+        Document doc = Jsoup.parse(html);
+
+        checkTitle(doc, WEB_CODE_NEW, "Create");
+
+        getById(doc, WEB_CODE_NEW, "code_snippet", "textarea");
+        getById(doc, WEB_CODE_NEW, "send_snippet", "button");
+
+        return CheckResult.correct();
+    }
+
     private CheckResult postSnippet(int id) {
         String snippet = SNIPPETS[id];
 
@@ -288,21 +299,6 @@ public class CodeSharingPlatformTest extends SpringTest {
                             return true;
                         }))
         );
-
-        return CheckResult.correct();
-    }
-
-    private CheckResult checkWebCodeNew() {
-        HttpResponse resp = get(WEB_CODE_NEW).send();
-        checkStatusCode(resp, 200);
-
-        String html = resp.getContent();
-        Document doc = Jsoup.parse(html);
-
-        checkTitle(doc, WEB_CODE_NEW, "Create");
-
-        getById(doc, WEB_CODE_NEW, "code_snippet", "textarea");
-        getById(doc, WEB_CODE_NEW, "send_snippet", "button");
 
         return CheckResult.correct();
     }

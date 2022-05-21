@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title th:text="${title}">Code</title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css"
+        rel="stylesheet">
   <link href="style.css" rel="stylesheet">
 </head>
 
@@ -13,10 +15,13 @@
     <li>
       <span class="date" id="load_date" th:text="${code.getDateTimeAsString()}"></span>
       <div class="code">
-        <pre id="code_snippet" th:text="${code.codeValue}"></pre>
+        <pre id="code_snippet"><code class="language-java" th:text="${code.codeValue}"></code></pre>
       </div>
     </li>
   </ul>
 </div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> <!-- deprecated but required for tests -->
+<!--<script>hljs.highlightAll();</script>-->
 </body>
 </html>

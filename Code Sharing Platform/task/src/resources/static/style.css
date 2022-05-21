@@ -22,23 +22,36 @@ body {
   margin: 1rem 3rem
 }
 
-#content {
-  overflow: auto;
+h1 {
+  color: green;
+  font-size: 3rem;
+  font-weight: normal;
+  margin-bottom: 2rem;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .code, #editor {
   border: 1px solid black;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 1.4rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  position: relative;
+  width: 100%;
+}
+
+#editor {
+  height: 70vh;
 }
 
 .code {
   background-color: #F0F0F0;
-  font-family: 'Source Code Pro', monospace;
-  font-size: 1.6rem;
-  margin-bottom: 2rem;
-  min-width: 600px;
-  overflow: auto;
-  padding: 1rem;
-  position: relative;
+  overflow-x: auto;
 }
 
 .date {
@@ -48,7 +61,7 @@ body {
   padding-bottom: 0.5rem;
 }
 
-.send_snippet {
+#send_snippet {
   background: white;
   border: .1rem solid black;
   font-size: 1.6rem;
@@ -56,7 +69,7 @@ body {
   padding: .8rem .3rem;
 }
 
-.send_snippet:hover {
+#send_snippet:hover {
   background: green;
   color: white;
   cursor: pointer;
