@@ -21,12 +21,6 @@ import static org.hyperskill.hstest.testing.expect.Expectation.expect;
 import static org.hyperskill.hstest.testing.expect.json.JsonChecker.*;
 
 public class CodeSharingPlatformTest extends SpringTest {
-    final String API_CODE = "/api/code/";
-    final String WEB_CODE = "/code/";
-    final String API_CODE_NEW = "/api/code/new";
-    final String WEB_CODE_NEW = "/code/new";
-    final String API_LATEST = "/api/code/latest";
-    final String WEB_LATEST = "/code/latest";
     final String[] SNIPPETS = {
             "public static void ...",
             "class Code { ...",
@@ -52,10 +46,26 @@ public class CodeSharingPlatformTest extends SpringTest {
             "Snippet #21",
             "Snippet #22",
     };
+
+    final String API_CODE = "/api/code/";
+    final String WEB_CODE = "/code/";
+
+    final String API_CODE_NEW = "/api/code/new";
+    final String WEB_CODE_NEW = "/code/new";
+
+    final String API_LATEST = "/api/code/latest";
+    final String WEB_LATEST = "/code/latest";
     final Map<Integer, Integer> secs = new HashMap<>();
 
     final Map<Integer, String> ids = new HashMap<>();
     final Map<Integer, String> dates = new HashMap<>();
+    final Map<Integer, Integer> views = new HashMap<>();
+    boolean checkSecret = false;
+    long freezeTime = 0;
+    long awaitTime = 0;
+    long sleepDurationSec = 0;
+    long sleepLowerBound = 0;
+    long sleepUpperBound = 0;
     @DynamicTestingMethod
     public DynamicTesting[] dt = new DynamicTesting[]{
             // test 1
@@ -220,14 +230,6 @@ public class CodeSharingPlatformTest extends SpringTest {
             () -> checkApiCode404(17),
             () -> checkWebCode404(17),
     };
-    final Map<Integer, Integer> views = new HashMap<>();
-
-    boolean checkSecret = false;
-    long freezeTime = 0;
-    long awaitTime = 0;
-    long sleepDurationSec = 0;
-    long sleepLowerBound = 0;
-    long sleepUpperBound = 0;
 
     public CodeSharingPlatformTest() {
         super(CodeSharingPlatform.class, "../snippets.mv.db");
@@ -284,6 +286,12 @@ public class CodeSharingPlatformTest extends SpringTest {
                             "Response body:\n\n" + resp.getContent()
             );
         }
+    }
+
+    private CheckResult checkApiCode404(int id) {
+        HttpResponse resp = get(API_CODE + ids.get(id)).send();
+        checkStatusCode(resp, 404);
+        return CheckResult.correct();
     }
 
     private CheckResult checkWebCode(int id) {
@@ -407,12 +415,6 @@ public class CodeSharingPlatformTest extends SpringTest {
                     "element" + (length == 1 ? "" : "s") + ", found: " + elems.size());
         }
         return elems;
-    }
-
-    private CheckResult checkApiCode404(int id) {
-        HttpResponse resp = get(API_CODE + ids.get(id)).send();
-        checkStatusCode(resp, 404);
-        return CheckResult.correct();
     }
 
     private CheckResult postSnippet(int id) {

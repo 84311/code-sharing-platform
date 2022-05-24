@@ -50,7 +50,7 @@ public class CodeController {
 
         model.addAttribute("snippets", List.of(code));
         model.addAttribute("time", "The code will be available for " + code.getRemainingTime() + " seconds");
-        model.addAttribute("views", code.getViews() + "more views allowed");
+        model.addAttribute("views", code.getViews() + " more views allowed");
         model.addAttribute("title", "Code");
         return "code";
     }
