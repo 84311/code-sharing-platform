@@ -1,7 +1,12 @@
 function send() {
     const editor = ace.edit("editor");
+    const timeInput = document.getElementById("time_restriction");
+    const viewsInput = document.getElementById("views_restriction");
+
     const object = {
-        "code": editor.getValue()
+        "code": editor.getValue(),
+        "time": timeInput.value,
+        "views": viewsInput.value
     };
 
     let json = JSON.stringify(object);

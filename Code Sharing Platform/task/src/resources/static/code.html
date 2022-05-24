@@ -14,6 +14,12 @@
   <ul th:each="code : ${snippets}" th:if="${not #lists.isEmpty(snippets)}">
     <li>
       <span class="date" id="load_date" th:text="${code.getDateTimeAsString()}"></span>
+      <div th:if="${code.timeRestricted}">
+        <span id="time_restriction" th:text="${time}"></span>
+      </div>
+      <div th:if="${code.viewRestricted}">
+        <span id="views_restriction" th:text="${views}"></span>
+      </div>
       <div class="code">
         <pre id="code_snippet"><code class="language-java" th:text="${code.codeValue}"></code></pre>
       </div>

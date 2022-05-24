@@ -12,6 +12,14 @@
   <div id="editor">
     <label><textarea id="code_snippet"></textarea></label> <!-- textarea tag is necessary for tests -->
   </div>
+  <div class="input_label">
+    <span>Time restriction</span>
+    <label for="time_restriction"></label><input id="time_restriction" type="text"/>
+  </div>
+  <div class="input_label">
+    <span>Views restriction</span>
+    <label for="views_restriction"></label><input id="views_restriction" type="text"/>
+  </div>
   <button id="send_snippet" onclick="send()" type="submit">Submit</button>
 </div>
 <script src="script.js"></script>
